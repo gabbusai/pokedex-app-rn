@@ -13,6 +13,14 @@ import PokeGeneral from '../../../components/PokeGeneral'
 import PokeStats from '../../../components/PokeStats'
 import BottomSheet from '@gorhom/bottom-sheet'
 import PokeTypes from '../../../components/PokeTypes'
+import TabButtons from '../../../components/TabButtons'
+
+
+export const enum CustomSection{
+  General,
+  Stats,
+  Evolution
+}
 export default function PokemonDetails() {
   //font 
   const [fontsLoaded, error] = useFonts({
@@ -28,9 +36,9 @@ export default function PokemonDetails() {
    
 
       //states for selected tab
-      const sections: SectionType[] = ['General', 'Stats', 'Evolution'];
-      const [selectedTab, setSelectedTab] = useState<SectionType>('General');
-
+      
+    const [selectedTab, setSelectedTab] = useState<CustomSection>(CustomSection.General);
+    const sections: SectionType[] = [{title: 'General'}, {title: 'Stats',}, {title: 'Evolution',}]
     //get id from link parameter
     const { id } = useLocalSearchParams()
     const pokeId = id?.toString();
@@ -71,7 +79,7 @@ export default function PokemonDetails() {
               </View>
     }
     //after loading
-    //const color = pokemon.types[0].type.name; //outputs something like grass or fire
+
     const pokeColor = COLORS[pokemon.types[0].type.name as keyof typeof COLORS] || 'white';
     const isFavorite = useIsPokemonFavorite(pokemon.id, favorites);
 
@@ -82,15 +90,9 @@ export default function PokemonDetails() {
       } else {
           addToFavorites(pokemon);
       };
-
-
-
-
   }
 
-    //console.log(error);
   return (
-    
     <View style = {{ ...styles.mainCont, backgroundColor: pokeColor }}>
       <Stack.Screen options={{ 
         headerTitle: '',
@@ -108,7 +110,7 @@ export default function PokemonDetails() {
           </Pressable>
       )
         }} />
-        <View style={styles.cardCont}>
+        <View style={{ ...styles.cardCont}}>
             <Text style={{ ...styles.mainText, fontFamily: 'VT323_400Regular' }}>{pokemon.name}</Text>
             <Text style={styles.pokeId}>#{pokemon.id}</Text>
             <View style={styles.typeCont}>
@@ -130,45 +132,38 @@ export default function PokemonDetails() {
         </View>
 
         <View style={styles.bottomCard}>
-          <View style={styles.sectionCont}>
-            {
-              sections.map((section) => 
-                {
-                return <Pressable key={section} style={styles.sectionTab}
-                onPress={() => setSelectedTab(section)}
-                > 
-                  <Text style={{ ...styles.sectionText, 
-                  borderBottomWidth: selectedTab == section ? 3 : 0,
-                  borderColor: pokeColor,
-                  color: selectedTab == section ?  pokeColor : COLORS.normal
-                  }}>{section}</Text> 
-                </Pressable>
-              })
-            }
-          </View>
+
+
+        <TabButtons sections={sections} 
+                    selectedTab={selectedTab} 
+                    setSelectedTab={setSelectedTab}
+                    pokeColor={pokeColor}
+                    font={'JetBrainsMonoBold'}
+        />
 
           <View>
             {
-              selectedTab === 'General' &&
+              selectedTab === CustomSection.General &&
               <PokeGeneral pokemon={pokemon} pokemonSpecies={pokemonSpecies}/>
             }
             {
-              selectedTab === 'Stats' &&
+              selectedTab === CustomSection.Stats &&
               <PokeStats pokemon={pokemon} pokemonSpecies={pokemonSpecies}/>
             }
             {
-              selectedTab === 'Evolution' &&
+              selectedTab === CustomSection.Evolution &&
               <Text>Evolution Tab</Text>
             }
           </View>
-        </View>
 
+        </View>
+          
         <BottomSheet snapPoints={snapPoints} ref={bottomSheetRef}>
             <PokeTypes typeName={currentType}/>
         </BottomSheet>
-
     </View>
   )
+  
 }
 
 const styles = StyleSheet.create({
@@ -194,10 +189,9 @@ cardCont: {
     paddingTop: 15,
     paddingHorizontal: 15,
     alignItems:'center',
-    //zIndex: 2,
 },
 bottomCard: {
-  //zIndex: 1,
+    //zIndex: 3,
     flex: 1,
     width: '100%',
     borderTopLeftRadius: 45,
@@ -238,7 +232,7 @@ typeText: {
 imgCont:{
 height: 270,
 aspectRatio: 1/1,
-marginTop: -50,
+marginTop: -80,
 },
 sectionCont: {
   width: '100%',

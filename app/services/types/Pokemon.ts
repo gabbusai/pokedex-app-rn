@@ -105,4 +105,4 @@ export type FavPokemon = {
   pokemon: Pokemon;
 }
 
-export type SectionType = 'General' | 'Stats' | 'Evolution';
+export type SectionType ={ title: 'General' | 'Stats' | 'Evolution';}
