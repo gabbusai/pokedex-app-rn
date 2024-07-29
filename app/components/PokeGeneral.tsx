@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import {Pokemon, PokemonSpecies } from '../services/types/Pokemon'
 import { COLORS } from '../services/colors'
+import { MotiView } from 'moti'
 type PokeProps = {
     pokemon: Pokemon,
     pokemonSpecies: PokemonSpecies
@@ -14,7 +15,19 @@ const PokeGeneral = ({
     //cleaning the text (ty chat gpt <3)
     const cleanedText = pokemonSpecies.flavor_text_entries[2].flavor_text.replace(/\n/g, ' ').replace(/\\/g, '');
 return (
-        <View style={styles.generalTabCont}>
+        <MotiView style={styles.generalTabCont}
+        from={{
+            opacity: 0,
+            scale: 0.5,
+          }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+          }}
+          exit={{
+            opacity: 0,
+            scale: 0.9,
+          }}>
         <Text style={styles.flavorText}>{cleanedText}</Text>
             <View style={styles.secondarySection}>
                 <Text style={styles.secondarySectionText}>
@@ -34,7 +47,7 @@ return (
 
 
             </View>
-        </View>
+        </MotiView>
     )
 }
 

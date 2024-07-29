@@ -4,6 +4,8 @@ import { usePokemonDetails, usePokemonNames } from '../../services/queries';
 import { router, Stack } from 'expo-router';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { COLORS } from '../../services/colors';
+import { Skeleton } from 'moti/skeleton';
+import { MotiView } from 'moti';
 
 export default function index() {
   const pokemonNames = usePokemonNames();
@@ -25,7 +27,7 @@ const filteredPokemonList = pokemonList.filter((pokemon) => {
 
 if(!pokemonNames){
   return(
-    <Text>Loading...</Text>
+    <Skeleton />
   )
 }
 //const pokeColor = COLORS[pokemon.types[0].type.name as keyof typeof COLORS] || 'white';
@@ -47,8 +49,23 @@ if(!pokemonNames){
         contentContainerStyle={{ gap: 30 }}
         columnWrapperStyle={{ gap: 40 }}
         renderItem={({ item : pokemon }) => (
+          
             <Pressable onPress={() => router.push(`/pokemon/${pokemon.data?.id}`)}
             style={{ ...styles.pokemonCard, backgroundColor: COLORS[pokemon.data?.types[0].type.name as keyof typeof COLORS] || 'white' }}>
+            {pokemon.isFetching ? 
+            <Skeleton
+            show
+            radius="round"
+            backgroundColor={COLORS.light}
+            transition={{ 
+              type: 'timing',
+              duration: 2000,
+             }}
+            >
+              <View  style={{ height: 120, width: 120}}/>
+            </Skeleton> 
+            :
+            <View>
             <View>
               <Text style={styles.textOne }>{pokemon.data?.name}</Text> 
             </View>
@@ -56,7 +73,8 @@ if(!pokemonNames){
             <Image  source={{ uri: pokemon.data?.sprites?.front_default }}
                     style={{ height: 100, aspectRatio: 4/3,}}
             />
-            
+            </View>
+          }
             </Pressable>
           )}
           keyExtractor={(item) => `${item.data?.name}_${item.data?.id}` && Math.random().toString()}
@@ -68,6 +86,7 @@ if(!pokemonNames){
               </View>
             ) : null)}
       />
+
     </View>
   );
 }

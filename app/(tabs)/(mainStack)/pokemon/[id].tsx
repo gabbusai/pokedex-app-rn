@@ -14,6 +14,7 @@ import PokeStats from '../../../components/PokeStats'
 import BottomSheet from '@gorhom/bottom-sheet'
 import PokeTypes from '../../../components/PokeTypes'
 import TabButtons from '../../../components/TabButtons'
+import { AnimatePresence, MotiView } from 'moti'
 
 
 export const enum CustomSection{
@@ -33,12 +34,10 @@ export default function PokemonDetails() {
       Quantico_400Regular,
       VT323_400Regular,
   });
-   
-
       //states for selected tab
-      
     const [selectedTab, setSelectedTab] = useState<CustomSection>(CustomSection.General);
     const sections: SectionType[] = [{title: 'General'}, {title: 'Stats',}, {title: 'Evolution',}]
+
     //get id from link parameter
     const { id } = useLocalSearchParams()
     const pokeId = id?.toString();
@@ -79,11 +78,10 @@ export default function PokemonDetails() {
               </View>
     }
     //after loading
-
     const pokeColor = COLORS[pokemon.types[0].type.name as keyof typeof COLORS] || 'white';
     const isFavorite = useIsPokemonFavorite(pokemon.id, favorites);
 
-    //favorite handler
+    //favorite handler from the context
     const handleFavoritePress = () => {
       if (isFavorite) {
           removeToFavorites(pokemon);
@@ -140,21 +138,33 @@ export default function PokemonDetails() {
                     pokeColor={pokeColor}
                     font={'JetBrainsMonoBold'}
         />
+        
+          <MotiView>
 
-          <View>
-            {
+          <AnimatePresence exitBeforeEnter>
+            {//first tab
               selectedTab === CustomSection.General &&
               <PokeGeneral pokemon={pokemon} pokemonSpecies={pokemonSpecies}/>
             }
+          
+
+
+
             {
               selectedTab === CustomSection.Stats &&
               <PokeStats pokemon={pokemon} pokemonSpecies={pokemonSpecies}/>
             }
+
+
+
+
             {
               selectedTab === CustomSection.Evolution &&
               <Text>Evolution Tab</Text>
             }
-          </View>
+          </AnimatePresence>
+
+          </MotiView>
 
         </View>
           
@@ -232,7 +242,7 @@ typeText: {
 imgCont:{
 height: 270,
 aspectRatio: 1/1,
-marginTop: -80,
+marginTop: -50,
 },
 sectionCont: {
   width: '100%',

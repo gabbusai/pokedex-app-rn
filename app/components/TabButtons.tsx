@@ -2,8 +2,8 @@ import { LayoutChangeEvent, Pressable, StyleSheet, Text, View } from 'react-nati
 import React, { useState } from 'react'
 import { SectionType } from '../services/types/Pokemon'
 import { COLORS } from '../services/colors'
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
-
+import Animated, { interpolateColor, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
+import { MotiText } from 'moti'
 
 
 export type TabButtonProps = {
@@ -27,19 +27,22 @@ export default function TabButtons({ sections, setSelectedTab, selectedTab, font
     }
 
     
+    //set initial value for the position of the tab
+    const tabPositionX = useSharedValue<number>(0);
 
-    const tabPositionX = useSharedValue(0);
-
+    //will be triggered by function onTabPress by using runOnJS
     const handlePress = (index: number) => {
         setSelectedTab(index);
     }
+    //animation for tab click
     const onTabPress = (index: number) => {
         tabPositionX.value = withTiming(buttonWidth * index, {}, 
             () => {
-                runOnJS(handlePress)(index);
+                runOnJS(handlePress)(index); //will run asynch
             })
     }
 
+    //will handle animating and moving the underline from one index to another.
     const animatedStyle = useAnimatedStyle(() => {
         return{
             transform: [
@@ -47,6 +50,7 @@ export default function TabButtons({ sections, setSelectedTab, selectedTab, font
             ]
         }
     })
+
 
   return (
     <View style={{ 
@@ -72,6 +76,7 @@ export default function TabButtons({ sections, setSelectedTab, selectedTab, font
             >
             {
                 sections.map((section, index) => {
+                    
                     const color = selectedTab === index ? pokeColor : COLORS.dark01
                     return(
                         <Pressable onPress={() => onTabPress(index)} key={index}
@@ -85,41 +90,15 @@ export default function TabButtons({ sections, setSelectedTab, selectedTab, font
                                 fontSize: 18,
                                 fontFamily: font
                                 }}
+
                                 >{section.title}</Text>
                         </Pressable>
                     )
                 })
             }
             </View>
-
-
-        
-
     </View>
-  )
+    )
 }
 
 const styles = StyleSheet.create({})
-
-
-
-/*
-
-          <View style={styles.sectionCont}>
-            {
-              sections.map((section) => 
-                {
-                return <Pressable key={section} style={styles.sectionTab}
-                onPress={() => setSelectedTab(section)}
-                > 
-                  <Text style={{ ...styles.sectionText, 
-                  borderBottomWidth: selectedTab == section ? 3 : 0,
-                  borderColor: pokeColor,
-                  color: selectedTab == section ?  pokeColor : COLORS.normal
-                  }}>{section}</Text> 
-                </Pressable>
-              })
-            }
-          </View>
-
-*/

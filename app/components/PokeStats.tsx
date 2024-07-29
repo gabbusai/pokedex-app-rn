@@ -3,6 +3,7 @@ import React from 'react'
 import { Pokemon, PokemonSpecies } from '../services/types/Pokemon'
 import { usePokemonType } from '../services/queries'
 import { COLORS } from '../services/colors'
+import { MotiView } from 'moti'
 
 
 type pokeProps = {
@@ -21,13 +22,17 @@ const types = usePokemonType(typesList)
             data={pokemon.stats}
             numColumns={1}
             contentContainerStyle={{ gap: 0 }}
-            renderItem={({item: stat}) => (
+            renderItem={({item: stat, index}) => (
                 <View key={stat.stat.name} style={styles.statsCard}> 
                     <Text style={{ ...styles.statCardText, width: 110, textAlign: 'right'}}>
                         {stat.stat.name.replace(`special`, 'Sp')}:
                     </Text>
 
-                    <View style={{ width:stat.base_stat * 0.8, marginRight: 20 , ...styles.statsBar}}/>
+                    <MotiView 
+                    style={{marginRight: 20 , ...styles.statsBar}}
+                    from={{ width: 0, backgroundColor: COLORS.darkBrown }}
+                    animate={{ width:stat.base_stat * 0.81, backgroundColor: COLORS.gray02 }}
+                    transition={{ type: 'spring', duration: stat.base_stat * 90}}/>
                     <Text style={{ ...styles.statCardText }}>
                         {stat.base_stat}
                     </Text>
@@ -99,7 +104,7 @@ const styles = StyleSheet.create({
     },
     statsBar:{
         height: 7,
-        backgroundColor: COLORS.gray02,
+        //backgroundColor: COLORS.gray02,
         borderRadius: 5,
         marginVertical: 9,
     },
